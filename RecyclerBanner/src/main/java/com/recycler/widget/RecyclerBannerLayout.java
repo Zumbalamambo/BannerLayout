@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -67,13 +66,12 @@ public class RecyclerBannerLayout extends FrameLayout
     public static final int ALIGN_PARENT_BOTTOM = 12;
     public static final int CENTER_IN_PARENT = 13;
 
-    private OnRecyclerBannerClickListener onBannerClickListener = null;
+    private OnRecyclerBannerClickListener onRecyclerBannerClickListener = null;
     private List<? extends RecyclerBannerModel> imageList = null;
-    private RecyclerBannerHandlerUtils bannerHandlerUtils = null;
-    private RecyclerBannerTipsLayout bannerTipLayout = null;
-    private RecyclerBannerImageLoaderManager imageLoaderManage = null; //Image Load Manager
-    private View tipsView = null; //The custom hint bar must take over viewpager's OnPageChangeListener method
-    private OnRecyclerBannerTitleListener onBannerTitleListener = null;
+    private RecyclerBannerHandlerUtils recyclerBannerHandlerUtils = null;
+    private RecyclerBannerTipsLayout recyclerBannerTipLayout = null;
+    private RecyclerBannerImageLoaderManager recyclerImageLoaderManage = null; //Image Load Manager
+    private OnRecyclerBannerTitleListener onRecyclerBannerTitleListener = null;
     private RecyclerBannerPageView pageView = null; // viewpager page count textView
     private RecyclerBannerAdapter recyclerAdapter;
 
@@ -207,21 +205,20 @@ public class RecyclerBannerLayout extends FrameLayout
      * <p>
      *************************************************************************************************************/
 
-    public RecyclerBannerLayout clearBanner() {
+    public RecyclerBannerLayout clearRecyclerBanner() {
         clearHandler();
-        clearBannerTipLayout();
-        clearImageLoaderManager();
-        clearBannerClickListener();
+        clearRecyclerBannerTipLayout();
+        clearRecyclerImageLoaderManager();
+        clearRecyclerBannerClickListener();
+        clearRecyclerBannerTitleListener();
         clearImageList();
-        clearPageView();
-        clearBannerTitleListener();
-        clearTipsView();
+        clearRecyclerPageView();
         return this;
     }
 
 
     public RecyclerBannerLayout initPageNumView() {
-        clearPageView();
+        clearRecyclerPageView();
         pageView = new RecyclerBannerPageView(getContext());
         pageView.setText(1 + pageNumViewMark + getDotsSize());
         addView(pageView, pageView.initPageView(this));
@@ -248,31 +245,28 @@ public class RecyclerBannerLayout extends FrameLayout
     public RecyclerBannerLayout initTips(boolean isBackgroundColor,
                                          boolean isVisibleDots,
                                          boolean isVisibleTitle) {
-        if (!isNull(tipsView)) {
-            error(R.string.tipsView_no_null);
-        }
         if (isNull(imageList)) {
             error(R.string.banner_adapterType_null);
         }
         this.isTipsBackground = isBackgroundColor;
         this.isVisibleDots = isVisibleDots;
         this.isVisibleTitle = isVisibleTitle;
-        clearBannerTipLayout();
-        bannerTipLayout = new RecyclerBannerTipsLayout(getContext());
-        bannerTipLayout.removeAllViews();
+        clearRecyclerBannerTipLayout();
+        recyclerBannerTipLayout = new RecyclerBannerTipsLayout(getContext());
+        recyclerBannerTipLayout.removeAllViews();
         if (isVisibleDots) {
-            bannerTipLayout.setDots(this);
+            recyclerBannerTipLayout.setDots(this);
         }
         if (isVisibleTitle) {
-            bannerTipLayout.setTitle(this);
-            if (!isNull(onBannerTitleListener)) {
-                bannerTipLayout.setTitle(onBannerTitleListener.getTitle(0));
+            recyclerBannerTipLayout.setTitle(this);
+            if (!isNull(onRecyclerBannerTitleListener)) {
+                recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(0));
             } else {
-                bannerTipLayout.setTitle(imageList.get(0).getTitle());
+                recyclerBannerTipLayout.setTitle(imageList.get(0).getTitle());
             }
         }
-        bannerTipLayout.setBannerTips(this);
-        addView(bannerTipLayout);
+        recyclerBannerTipLayout.setBannerTips(this);
+        addView(recyclerBannerTipLayout);
         return this;
     }
 
@@ -318,12 +312,9 @@ public class RecyclerBannerLayout extends FrameLayout
             error(R.string.array_size_lnconsistent);
         }
         List<RecyclerBannerModel> imageArrayList = new ArrayList<>();
-        RecyclerBannerModel bannerModel;
-        for (int i = 0; i < url.size(); i++) {
-            bannerModel = new RecyclerBannerModel();
-            bannerModel.setImage(url.get(i));
-            bannerModel.setTitle(title.get(i));
-            imageArrayList.add(bannerModel);
+        int size = url.size();
+        for (int i = 0; i < size; i++) {
+            imageArrayList.add(new RecyclerBannerModel(url.get(i), title.get(i)));
         }
         initListResources(imageArrayList);
         return this;
@@ -343,19 +334,16 @@ public class RecyclerBannerLayout extends FrameLayout
     public RecyclerBannerLayout start(boolean isStartRotation, long delayTime) {
         clearHandler();
         if (isStartRotation && getDotsSize() > 1) {
-            bannerHandlerUtils = new RecyclerBannerHandlerUtils(0);
-            bannerHandlerUtils.setDelayTime(delayTime);
+            recyclerBannerHandlerUtils = new RecyclerBannerHandlerUtils(0);
+            recyclerBannerHandlerUtils.setDelayTime(delayTime);
             this.delayTime = delayTime;
             this.isStartRotation = isStartRotation;
-            restoreBanner();
+            restoreRecyclerBanner();
         }
         return this;
     }
 
 
-    /**
-     * glide Loads an error image, called before initAdapter
-     */
     public RecyclerBannerLayout setErrorImageView(@DrawableRes int errorImageView) {
         this.errorImageView = errorImageView;
         if (!isNull(recyclerAdapter)) {
@@ -364,9 +352,6 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    /**
-     * glide loads the image before the initAdapter is called
-     */
     public RecyclerBannerLayout setPlaceImageView(@DrawableRes int placeImageView) {
         this.placeImageView = placeImageView;
         if (!isNull(recyclerAdapter)) {
@@ -375,21 +360,9 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-
-    /**
-     * Initialize the custom hint column before calling initAdapter
-     */
-    public RecyclerBannerLayout setTipsView(@NonNull View view) {
-        clearTipsView();
-        this.tipsView = view;
-        addView(tipsView);
-        return this;
-    }
-
-
-    public RecyclerBannerLayout clearBannerClickListener() {
-        if (!isNull(onBannerClickListener)) {
-            onBannerClickListener = null;
+    public RecyclerBannerLayout clearRecyclerBannerClickListener() {
+        if (!isNull(onRecyclerBannerClickListener)) {
+            onRecyclerBannerClickListener = null;
         }
         return this;
     }
@@ -406,67 +379,51 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    public RecyclerBannerHandlerUtils getBannerHandlerUtils() {
-        return bannerHandlerUtils;
+    public RecyclerBannerHandlerUtils getRecyclerBannerHandlerUtils() {
+        return recyclerBannerHandlerUtils;
     }
 
     public RecyclerBannerLayout clearHandler() {
-        if (!isNull(bannerHandlerUtils)) {
-            bannerHandlerUtils.setBannerStatus(-1);
-            bannerHandlerUtils.removeCallbacksAndMessages(null);
-            bannerHandlerUtils = null;
+        if (!isNull(recyclerBannerHandlerUtils)) {
+            recyclerBannerHandlerUtils.setBannerStatus(-1);
+            recyclerBannerHandlerUtils.removeCallbacksAndMessages(null);
+            recyclerBannerHandlerUtils = null;
         }
         return this;
     }
 
-    public RecyclerBannerTipsLayout getBannerTipLayout() {
-        return bannerTipLayout;
+    public RecyclerBannerTipsLayout getRecyclerBannerTipLayout() {
+        return recyclerBannerTipLayout;
     }
 
-    public RecyclerBannerLayout clearBannerTipLayout() {
-        if (!isNull(bannerTipLayout)) {
-            bannerTipLayout.removeAllViews();
-            bannerTipLayout = null;
+    public RecyclerBannerLayout clearRecyclerBannerTipLayout() {
+        if (!isNull(recyclerBannerTipLayout)) {
+            recyclerBannerTipLayout.removeAllViews();
+            recyclerBannerTipLayout = null;
         }
         return this;
     }
 
-    public RecyclerBannerLayout clearImageLoaderManager() {
-        if (!isNull(imageLoaderManage)) {
-            imageLoaderManage = null;
+    public RecyclerBannerLayout clearRecyclerImageLoaderManager() {
+        if (!isNull(recyclerImageLoaderManage)) {
+            recyclerImageLoaderManage = null;
         }
         return this;
     }
 
-    public View getTipsView() {
-        return tipsView;
-    }
-
-    public RecyclerBannerLayout clearTipsView() {
-        if (!isNull(tipsView)) {
-            tipsView = null;
-        }
-        return this;
-    }
-
-
-    public OnRecyclerBannerTitleListener getOnBannerTitleListener() {
-        return onBannerTitleListener;
-    }
-
-    public RecyclerBannerLayout clearBannerTitleListener() {
-        if (!isNull(onBannerTitleListener)) {
-            onBannerTitleListener = null;
+    public RecyclerBannerLayout clearRecyclerBannerTitleListener() {
+        if (!isNull(onRecyclerBannerTitleListener)) {
+            onRecyclerBannerTitleListener = null;
         }
         return this;
     }
 
 
-    public RecyclerBannerPageView getPageView() {
+    public RecyclerBannerPageView getRecyclerPageView() {
         return pageView;
     }
 
-    public RecyclerBannerLayout clearPageView() {
+    public RecyclerBannerLayout clearRecyclerPageView() {
         if (!isNull(pageView)) {
             pageView = null;
         }
@@ -476,31 +433,31 @@ public class RecyclerBannerLayout extends FrameLayout
     /**
      * get banner rotation status
      */
-    public int getBannerStatus() {
-        if (isNull(bannerHandlerUtils)) {
+    public int getRecyclerBannerStatus() {
+        if (isNull(recyclerBannerHandlerUtils)) {
             error(R.string.banner_handler_erro);
         }
-        return bannerHandlerUtils.getBannerStatus();
+        return recyclerBannerHandlerUtils.getBannerStatus();
     }
 
-    public void startBanner() {
+    public void startRecyclerBanner() {
         start(true);
     }
 
-    public void stopBanner() {
-        if (!isNull(bannerHandlerUtils)) {
+    public void stopRecyclerBanner() {
+        if (!isNull(recyclerBannerHandlerUtils)) {
             isStartRotation = false;
-            bannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_KEEP);
-            bannerHandlerUtils.removeCallbacksAndMessages(null);
-            bannerHandlerUtils.setBannerStatus(-1);
+            recyclerBannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_KEEP);
+            recyclerBannerHandlerUtils.removeCallbacksAndMessages(null);
+            recyclerBannerHandlerUtils.setBannerStatus(-1);
         }
     }
 
-    public void restoreBanner() {
-        if (!isNull(bannerHandlerUtils)) {
-            stopBanner();
+    public void restoreRecyclerBanner() {
+        if (!isNull(recyclerBannerHandlerUtils)) {
+            stopRecyclerBanner();
             isStartRotation = true;
-            bannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_BREAK);
+            recyclerBannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_BREAK);
         }
     }
 
@@ -699,7 +656,7 @@ public class RecyclerBannerLayout extends FrameLayout
 
 
     public RecyclerBannerLayout setOnRecyclerBannerClickListener(@NonNull OnRecyclerBannerClickListener onBannerClickListener) {
-        this.onBannerClickListener = onBannerClickListener;
+        this.onRecyclerBannerClickListener = onBannerClickListener;
         if (!isNull(recyclerAdapter)) {
             recyclerAdapter.setClickListener(onBannerClickListener);
         }
@@ -707,12 +664,12 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
     public RecyclerBannerLayout addOnRecyclerBannerTitleListener(@NonNull OnRecyclerBannerTitleListener onBannerTitleListener) {
-        this.onBannerTitleListener = onBannerTitleListener;
+        this.onRecyclerBannerTitleListener = onBannerTitleListener;
         return this;
     }
 
     public RecyclerBannerLayout setRecyclerImageLoaderManager(@NonNull RecyclerBannerImageLoaderManager loaderManage) {
-        this.imageLoaderManage = loaderManage;
+        this.recyclerImageLoaderManage = loaderManage;
         if (!isNull(recyclerAdapter)) {
             recyclerAdapter.setImageLoaderManager(loaderManage);
         }
@@ -922,8 +879,8 @@ public class RecyclerBannerLayout extends FrameLayout
         recyclerAdapter = new RecyclerBannerAdapter(imageList);
         recyclerAdapter.setErrorImage(errorImageView);
         recyclerAdapter.setPlaceImage(placeImageView);
-        recyclerAdapter.setClickListener(onBannerClickListener);
-        recyclerAdapter.setImageLoaderManager(imageLoaderManage);
+        recyclerAdapter.setClickListener(onRecyclerBannerClickListener);
+        recyclerAdapter.setImageLoaderManager(recyclerImageLoaderManage);
 
 
         RecyclerView recyclerView = new RecyclerView(getContext());
@@ -972,7 +929,7 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
     private static class BannerException extends RuntimeException {
-        BannerException(String s) {
+        private BannerException(String s) {
             super(s);
         }
     }

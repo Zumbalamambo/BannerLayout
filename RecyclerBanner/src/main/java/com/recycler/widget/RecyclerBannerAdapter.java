@@ -54,28 +54,32 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (mDatas == null) {
             return;
         }
 
+        final int pos = position % mDatas.size();
+
         if (imageLoaderManager == null) {
             Glide
                     .with(holder.itemView.getContext())
-                    .load(mDatas.get(getPosition(position)).getImage())
+                    .load(mDatas.get(pos).getImage())
                     .placeholder(place_image)
                     .error(error_image)
                     .centerCrop()
                     .into((ImageView) holder.itemView);
         } else {
-            imageLoaderManager.display((ImageView) holder.itemView, mDatas.get(getPosition(position)));
+            //noinspection unchecked
+            imageLoaderManager.display((ImageView) holder.itemView, mDatas.get(pos));
         }
 
         if (clickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.onBannerClick(v, getPosition(position), mDatas.get(getPosition(position)));
+                    //noinspection unchecked
+                    clickListener.onBannerClick(v, pos, mDatas.get(pos));
                 }
             });
         }
@@ -84,9 +88,5 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : Integer.MAX_VALUE;
-    }
-
-    private int getPosition(int position) {
-        return position % mDatas.size();
     }
 }
