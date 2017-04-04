@@ -2,7 +2,7 @@ package com.bannersimple;
 
 import android.widget.ImageView;
 
-import com.bannerlayout.Interface.ImageLoaderManager;
+import com.recycler.listener.RecyclerBannerImageLoaderManager;
 import com.bannersimple.bean.BannerBean;
 import com.squareup.picasso.Picasso;
 
@@ -10,7 +10,7 @@ import com.squareup.picasso.Picasso;
  * by y on 2016/12/2
  */
 
-public class ImageManager implements ImageLoaderManager<BannerBean> {
+public class ImageManager implements RecyclerBannerImageLoaderManager<BannerBean> {
 
     @Override
     public void display(ImageView imageView, BannerBean model) {

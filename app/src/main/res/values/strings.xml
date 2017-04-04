@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">BannerSimple</string>
+    <string name="app_name">RecyclerBannerSample</string>
     <string name="image_holder">Custom model class, tip bar at the top</string>
     <string name="system_network_model">Network data, the prompt bar at the bottom</string>
     <string name="customize_load_Picture_Manager">Customize Load Picture Manager</string>
-    <string name="is_vertical">a vertical viewpager</string>
-    <string name="mark">\@</string>
+    <string name="is_vertical">vertical</string>
 </resources>

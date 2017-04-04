@@ -7,12 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bannerlayout.Interface.OnBannerClickListener;
-import com.bannerlayout.Interface.OnBannerTitleListener;
-import com.bannerlayout.model.BannerModel;
-import com.bannerlayout.widget.BannerLayout;
+import com.recycler.model.RecyclerBannerModel;
 import com.bannersimple.bean.BannerBean;
 import com.bannersimple.bean.ImageModel;
 
@@ -36,69 +32,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
             case IMAGE_MODEL:
 
                 holder.getTitle().setText(getString(holder.getContext(), R.string.image_holder));
-//                holder.getBannerLayout()
-//                        .initListResources(initImageModel())
-//                        .setTitleSetting(R.color.colorAccent, -1)
-//                        .setPageNumViewMargin(10, 0, 0, 10)
-//                        .setPageNumViewTextColor(R.color.colorAccent)
-//                        .setPageNumViewBackgroundColor(R.color.colorWhite)
-//                        .setPageNumViewMark(" * ")
-//                        .initPageNumView()
-//                        .initTips(true, true, true)
-//                        .start(true);
-                holder.getBannerLayout()
-                        .initListResources(initImageModel())
-                        .initTips(true, true, false)
-                        .setOnBannerClickListener(new OnBannerClickListener<ImageModel>() {
-                            @Override
-                            public void onBannerClick(View view, int position, ImageModel model) {
-
-                            }
-                        })
-                        .start(true, 4000);
                 break;
             case SYSTEM_NETWORK_MODEL:
 
                 holder.getTitle().setText(getString(holder.getContext(), R.string.system_network_model));
-                holder.getBannerLayout()
-                        .initListResources(initSystemNetWorkModel())
-                        .setPageNumViewSite(BannerLayout.PAGE_NUM_VIEW_SITE_TOP_LEFT)
-                        .setPageNumViewMargin(12, 0, 12, 0)
-                        .setPageNumViewTextColor(holder.getContext().getColor(R.color.colorAccent))
-                        .initPageNumView()
-                        .setTipsSite(BannerLayout.ALIGN_PARENT_BOTTOM)
-                        .initTips(true, true, true);
                 break;
             case IS_VERTICAL:
 
                 //if it is a vertical slide can not set the animation
                 holder.getTitle().setText(getString(holder.getContext(), R.string.is_vertical));
-                holder.getBannerLayout()
-                        .setVertical(true)
-                        .initListResources(initSystemNetWorkModel())
-                        .initTips(true, true, false)
-                        .start(true, 2000)
-                        .setOnBannerClickListener(new OnBannerClickListener() {
-                            @Override
-                            public void onBannerClick(View view, int position, Object model) {
-                                Toast.makeText(holder.getContext(), "" + position, Toast.LENGTH_SHORT).show();
-                            }
-
-                        });
                 break;
             default:
 
                 holder.getTitle().setText(getString(holder.getContext(), R.string.customize_load_Picture_Manager));
-                holder.getBannerLayout()
-                        .initListResources(initBannerBean())
-                        .setImageLoaderManager(new ImageManager())
-                        .addOnBannerTitleListener(new OnBannerTitleListener() {
-                            @Override
-                            public String getTitle(int newPosition) {
-                                return initBannerBean().get(newPosition).getThisTitle();
-                            }
-                        })
-                        .initTips(true, true, true);
                 break;
         }
     }
@@ -133,7 +79,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
 
     public static class BaseViewHolder extends RecyclerView.ViewHolder {
         private TextView title;
-        private BannerLayout bannerLayout;
         private LinearLayout rootView;
 
         public BaseViewHolder(View itemView) {
@@ -145,19 +90,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
             title.setPadding(10, 10, 10, 10);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 450);
-            bannerLayout = new BannerLayout(rootView.getContext());
 
             rootView.addView(title);
-            rootView.addView(bannerLayout, params);
         }
 
         public TextView getTitle() {
             return title;
         }
 
-        public BannerLayout getBannerLayout() {
-            return bannerLayout;
-        }
 
         public Context getContext() {
             return itemView.getContext();
@@ -167,12 +107,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
     /**
      * Comes with the Model class, the use of network data
      */
-    private List<BannerModel> initSystemNetWorkModel() {
-        List<BannerModel> mDatas = new ArrayList<>();
-        mDatas.add(new BannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
-        mDatas.add(new BannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "Shame it ~"));
-        mDatas.add(new BannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
-        mDatas.add(new BannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
+    private List<RecyclerBannerModel> initSystemNetWorkModel() {
+        List<RecyclerBannerModel> mDatas = new ArrayList<>();
+        mDatas.add(new RecyclerBannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
+        mDatas.add(new RecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "Shame it ~"));
+        mDatas.add(new RecyclerBannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
+        mDatas.add(new RecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
         return mDatas;
     }
 

@@ -20,8 +20,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':bannerlayout')
+    compile project(':RecyclerBanner')
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.ydevelop:rxNetWork:0.0.3'
 }

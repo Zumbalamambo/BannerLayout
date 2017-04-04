@@ -1,12 +1,12 @@
 package com.bannersimple.bean;
 
-import com.bannerlayout.model.BannerModel;
+import com.recycler.model.RecyclerBannerModel;
 
 /**
  * by y on 2016/11/1.
  */
 
-public class ImageModel extends BannerModel {
+public class ImageModel extends RecyclerBannerModel {
 
     public ImageModel(Object image, String title, String testText) {
         super(image, title);
