@@ -3,6 +3,7 @@ package com.recycler.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.recycler.annotation.TipsSiteMode;
 import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.recycler.listener.OnRecyclerBannerTitleListener;
 import com.recycler.listener.RecyclerBannerImageLoaderManager;
+import com.recycler.listener.RecyclerSelectItem;
 import com.recycler.model.RecyclerBannerModel;
 import com.recycler.util.RecyclerBannerHandlerUtils;
 import com.recycler.util.RecyclerBannerSelectorUtils;
@@ -41,7 +43,7 @@ public class RecyclerBannerLayout extends FrameLayout
         DotsInterface,
         RecyclerBannerTipsLayout.TitleInterface,
         RecyclerBannerTipsLayout.TipsInterface,
-        RecyclerBannerPageView.PageNumViewInterface {
+        RecyclerBannerPageView.PageNumViewInterface, RecyclerSelectItem {
 
     public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -73,7 +75,8 @@ public class RecyclerBannerLayout extends FrameLayout
     private RecyclerBannerImageLoaderManager recyclerImageLoaderManage = null; //Image Load Manager
     private OnRecyclerBannerTitleListener onRecyclerBannerTitleListener = null;
     private RecyclerBannerPageView pageView = null; // viewpager page count textView
-    private RecyclerBannerAdapter recyclerAdapter;
+    private RecyclerBannerAdapter recyclerAdapter = null;
+    private RecyclerView recyclerView = null;
 
     private boolean isStartRotation;//Whether auto rotation is enabled or not is not enabled by default
     private boolean isTipsBackground;//Whether to display a  dots background
@@ -334,7 +337,7 @@ public class RecyclerBannerLayout extends FrameLayout
     public RecyclerBannerLayout start(boolean isStartRotation, long delayTime) {
         clearHandler();
         if (isStartRotation && getDotsSize() > 1) {
-            recyclerBannerHandlerUtils = new RecyclerBannerHandlerUtils(0);
+            recyclerBannerHandlerUtils = new RecyclerBannerHandlerUtils(this, getScrollToPosition());
             recyclerBannerHandlerUtils.setDelayTime(delayTime);
             this.delayTime = delayTime;
             this.isStartRotation = isStartRotation;
@@ -883,8 +886,8 @@ public class RecyclerBannerLayout extends FrameLayout
         recyclerAdapter.setImageLoaderManager(recyclerImageLoaderManage);
 
 
-        RecyclerView recyclerView = new RecyclerView(getContext());
-        LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
+        recyclerView = new RecyclerView(getContext());
+        final LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
         if (isVertical) {
             manager.setOrientation(LinearLayoutManager.VERTICAL);
         } else {
@@ -892,6 +895,40 @@ public class RecyclerBannerLayout extends FrameLayout
         }
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(recyclerAdapter);
+        final int[] preEnablePosition = {0};
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        int newPosition = manager.findFirstCompletelyVisibleItemPosition() % imageList.size();
+                        if (!isNull(pageView)) {
+                            pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
+                        }
+                        if (!isNull(recyclerBannerTipLayout)) {
+                            if (isVisibleDots) {
+                                recyclerBannerTipLayout.changeDotsPosition(preEnablePosition[0], newPosition);
+                            }
+                            if (isVisibleTitle) {
+                                recyclerBannerTipLayout.clearText();
+                                if (!isNull(onRecyclerBannerTitleListener)) {
+                                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
+                                } else {
+                                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
+                                }
+                            }
+                        }
+                        preEnablePosition[0] = newPosition;
+                        if (!isNull(recyclerBannerHandlerUtils) && isStartRotation) {
+                            recyclerBannerHandlerUtils.sendMessage(Message.obtain(recyclerBannerHandlerUtils,
+                                    RecyclerBannerHandlerUtils.MSG_PAGE, manager.findLastCompletelyVisibleItemPosition(), 0));
+                        }
+                        break;
+                }
+
+            }
+        });
 
         PagerSnapHelper helper = new PagerSnapHelper();
         helper.attachToRecyclerView(recyclerView);
@@ -926,6 +963,13 @@ public class RecyclerBannerLayout extends FrameLayout
             }
         }
         return false;
+    }
+
+    @Override
+    public void setCurrentItem(int i) {
+        if (!isNull(recyclerView)) {
+            recyclerView.smoothScrollToPosition(i);
+        }
     }
 
     private static class BannerException extends RuntimeException {

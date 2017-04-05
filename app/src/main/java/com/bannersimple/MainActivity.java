@@ -23,16 +23,23 @@ public class MainActivity extends AppCompatActivity {
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recyclerView.setAdapter(new MainAdapter());
 
-        RecyclerBannerLayout recyclerBannerLayout = new RecyclerBannerLayout(getApplicationContext());
+        final RecyclerBannerLayout recyclerBannerLayout = new RecyclerBannerLayout(getApplicationContext());
         recyclerBannerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500));
         recyclerBannerLayout
                 .initListResources(initSystemNetWorkModel())
+                .initTips(true, true, true)
                 .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener() {
                     @Override
                     public void onBannerClick(View view, int position, Object model) {
-                        Toast.makeText(view.getContext(), position + "", Toast.LENGTH_SHORT).show();
+                        if (recyclerBannerLayout.getRecyclerBannerStatus() == -1) {
+                            Toast.makeText(view.getContext(), "开始轮播", Toast.LENGTH_SHORT).show();
+                            recyclerBannerLayout.restoreRecyclerBanner();
+                        } else {
+                            recyclerBannerLayout.stopRecyclerBanner();
+                            Toast.makeText(view.getContext(), "暂停轮播", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                });
+                }).start(true);
         setContentView(recyclerBannerLayout);
     }
 

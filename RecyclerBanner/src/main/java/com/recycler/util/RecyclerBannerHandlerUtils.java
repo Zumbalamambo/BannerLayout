@@ -3,6 +3,8 @@ package com.recycler.util;
 import android.os.Handler;
 import android.os.Message;
 
+import com.recycler.listener.RecyclerSelectItem;
+
 /**
  * by y on 2016/9/15.
  */
@@ -15,10 +17,11 @@ public class RecyclerBannerHandlerUtils extends Handler {
     public static final int MSG_BREAK = 3;
     public static final int MSG_PAGE = 4;
     private long delayTime = 2000;
-
+    private RecyclerSelectItem recyclerSelectItem;
     private int page = 0;
 
-    public RecyclerBannerHandlerUtils(int currentItem) {
+    public RecyclerBannerHandlerUtils(RecyclerSelectItem recyclerSelectItem, int currentItem) {
+        this.recyclerSelectItem = recyclerSelectItem;
         this.page = currentItem;
     }
 
@@ -37,6 +40,9 @@ public class RecyclerBannerHandlerUtils extends Handler {
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
+        if (null == recyclerSelectItem) {
+            return;
+        }
         if (hasMessages(MSG_UPDATE)) {
             removeMessages(MSG_UPDATE);
         }
@@ -46,11 +52,12 @@ public class RecyclerBannerHandlerUtils extends Handler {
         }
         switch (what) {
             case MSG_UPDATE:
-//                mCurrent.setCurrentItem(++page);
+                recyclerSelectItem.setCurrentItem(++page);
                 sendEmptyMessageDelayed(MSG_UPDATE, delayTime);
                 break;
             case MSG_PAGE:
                 page = msg.arg1;
+                sendEmptyMessageDelayed(MSG_UPDATE, delayTime);
                 break;
             case MSG_KEEP:
                 break;
