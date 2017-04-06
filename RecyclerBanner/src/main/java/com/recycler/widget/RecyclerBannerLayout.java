@@ -62,11 +62,11 @@ public class RecyclerBannerLayout extends FrameLayout
     /**
      * tipsLayout location marker
      */
-    public static final int ALIGN_PARENT_LEFT = 9;
-    public static final int ALIGN_PARENT_TOP = 10;
-    public static final int ALIGN_PARENT_RIGHT = 11;
-    public static final int ALIGN_PARENT_BOTTOM = 12;
-    public static final int CENTER_IN_PARENT = 13;
+    public static final int LEFT = 9;
+    public static final int TOP = 10;
+    public static final int RIGHT = 11;
+    public static final int BOTTOM = 12;
+    public static final int CENTER = 13;
 
     private OnRecyclerBannerClickListener onRecyclerBannerClickListener = null;
     private List<? extends RecyclerBannerModel> imageList = null;
@@ -161,9 +161,9 @@ public class RecyclerBannerLayout extends FrameLayout
         titleHeight = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_title_height, RecyclerBannerDefaults.TITLE_HEIGHT);
 
 
-        tipsSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_tips_site, ALIGN_PARENT_BOTTOM);
-        dotsSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_dots_site, ALIGN_PARENT_RIGHT);
-        titleSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_title_site, ALIGN_PARENT_LEFT);
+        tipsSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_tips_site, BOTTOM);
+        dotsSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_dots_site, RIGHT);
+        titleSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_title_site, LEFT);
         pageNumViewSite = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_pageNumView_site, PAGE_NUM_VIEW_SITE_TOP_RIGHT);
 
         pageNumViewRadius = typedArray.getFloat(R.styleable.RecyclerBannerLayout_rvb_page_num_view_radius, RecyclerBannerDefaults.PAGE_NUM_VIEW_RADIUS);
@@ -268,8 +268,10 @@ public class RecyclerBannerLayout extends FrameLayout
                 recyclerBannerTipLayout.setTitle(imageList.get(0).getTitle());
             }
         }
-        recyclerBannerTipLayout.setBannerTips(this);
-        addView(recyclerBannerTipLayout);
+        addView(recyclerBannerTipLayout, recyclerBannerTipLayout.setBannerTips(this));
+//        FrameLayout.LayoutParams tipsParams = new FrameLayout.LayoutParams(tipsWidth(), tipsHeight());
+//        tipsParams.gravity = Gravity.CENTER;
+//        addView(recyclerBannerTipLayout, tipsParams);
         return this;
     }
 

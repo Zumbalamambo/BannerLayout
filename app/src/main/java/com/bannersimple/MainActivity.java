@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerBannerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500));
         recyclerBannerLayout
                 .initListResources(initSystemNetWorkModel())
-                .initTips(true, true, true)
+                .setPageNumViewSite(RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_CENTER)
+                .initPageNumView()
                 .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener() {
                     @Override
                     public void onBannerClick(View view, int position, Object model) {

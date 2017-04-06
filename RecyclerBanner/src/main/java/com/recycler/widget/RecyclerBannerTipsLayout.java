@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -66,13 +67,23 @@ class RecyclerBannerTipsLayout extends RelativeLayout {
     /**
      * Initialize  this
      */
-    void setBannerTips(TipsInterface tipsInterface) {
-        LayoutParams tipsParams = new LayoutParams(tipsInterface.tipsWidth(), tipsInterface.tipsHeight());
-        tipsParams.addRule(tipsInterface.tipsSite());
-        setLayoutParams(tipsParams);
+    FrameLayout.LayoutParams setBannerTips(TipsInterface tipsInterface) {
+        FrameLayout.LayoutParams tipsParams = new FrameLayout.LayoutParams(tipsInterface.tipsWidth(), tipsInterface.tipsHeight());
+        switch (tipsInterface.tipsSite()) {
+            case RecyclerBannerLayout.BOTTOM:
+                tipsParams.gravity = Gravity.BOTTOM;
+                break;
+            case RecyclerBannerLayout.TOP:
+                tipsParams.gravity = Gravity.TOP;
+                break;
+            case RecyclerBannerLayout.CENTER:
+                tipsParams.gravity = Gravity.CENTER;
+                break;
+        }
         if (tipsInterface.isBackgroundColor()) {
             setBackgroundColor(tipsInterface.tipsLayoutBackgroundColor());
         }
+        return tipsParams;
     }
 
     /**

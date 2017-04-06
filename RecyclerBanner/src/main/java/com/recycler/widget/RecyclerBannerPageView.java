@@ -3,8 +3,9 @@ package com.recycler.widget;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.recycler.util.RecyclerBannerSelectorUtils;
 
@@ -24,8 +25,8 @@ class RecyclerBannerPageView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
 
-    RelativeLayout.LayoutParams initPageView(PageNumViewInterface pageNumViewInterface) {
-        RelativeLayout.LayoutParams pageParams = new RelativeLayout.LayoutParams(
+    FrameLayout.LayoutParams initPageView(PageNumViewInterface pageNumViewInterface) {
+        FrameLayout.LayoutParams pageParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         pageParams.rightMargin = pageNumViewInterface.getPageNumViewRightMargin();
@@ -34,32 +35,27 @@ class RecyclerBannerPageView extends AppCompatTextView {
         pageParams.bottomMargin = pageNumViewInterface.getPageNumViewBottomMargin();
         switch (pageNumViewInterface.pageNumViewSite()) {
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_TOP_LEFT:
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_TOP_RIGHT:
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                pageParams.gravity = Gravity.RIGHT | Gravity.TOP;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_LEFT:
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                pageParams.gravity = Gravity.LEFT | Gravity.BOTTOM;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_RIGHT:
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                pageParams.gravity = Gravity.RIGHT | Gravity.BOTTOM;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_CENTER_LEFT:
-                pageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                pageParams.gravity = Gravity.LEFT | Gravity.CENTER;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_CENTER_RIGHT:
-                pageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                pageParams.gravity = Gravity.RIGHT | Gravity.CENTER;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_TOP_CENTER:
-                pageParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                pageParams.gravity = Gravity.TOP | Gravity.CENTER;
                 break;
             case RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_CENTER:
-                pageParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                pageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                pageParams.gravity = Gravity.BOTTOM | Gravity.CENTER;
                 break;
         }
         setTextColor(pageNumViewInterface.getPageNumViewTextColor());
