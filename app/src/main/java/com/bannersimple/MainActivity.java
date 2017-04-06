@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerBannerLayout recyclerBannerLayout = new RecyclerBannerLayout(getApplicationContext());
         recyclerBannerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500));
         recyclerBannerLayout
+                .setTipsSite(RecyclerBannerLayout.TOP)
                 .initListResources(initSystemNetWorkModel())
+                .initTips(true, true, true)
                 .setPageNumViewSite(RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_CENTER)
                 .initPageNumView()
                 .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener() {

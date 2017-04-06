@@ -902,29 +902,18 @@ public class RecyclerBannerLayout extends FrameLayout
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                alterTipsView(manager, preEnablePosition);
                 switch (newState) {
                     case RecyclerView.SCROLL_STATE_IDLE:
-                        int newPosition = manager.findFirstCompletelyVisibleItemPosition() % imageList.size();
-                        if (!isNull(pageView)) {
-                            pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
-                        }
-                        if (!isNull(recyclerBannerTipLayout)) {
-                            if (isVisibleDots) {
-                                recyclerBannerTipLayout.changeDotsPosition(preEnablePosition[0], newPosition);
-                            }
-                            if (isVisibleTitle) {
-                                recyclerBannerTipLayout.clearText();
-                                if (!isNull(onRecyclerBannerTitleListener)) {
-                                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
-                                } else {
-                                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
-                                }
-                            }
-                        }
-                        preEnablePosition[0] = newPosition;
                         if (!isNull(recyclerBannerHandlerUtils) && isStartRotation) {
                             recyclerBannerHandlerUtils.sendMessage(Message.obtain(recyclerBannerHandlerUtils,
                                     RecyclerBannerHandlerUtils.MSG_PAGE, manager.findLastCompletelyVisibleItemPosition(), 0));
+                        }
+                        break;
+                    default:
+                        if (!isNull(recyclerBannerHandlerUtils)) {
+                            recyclerBannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_KEEP);
+                            recyclerBannerHandlerUtils.setBannerStatus(-1);
                         }
                         break;
                 }
@@ -937,6 +926,27 @@ public class RecyclerBannerLayout extends FrameLayout
         recyclerView.scrollToPosition(getScrollToPosition());
         addView(recyclerView);
         start(isStartRotation);
+    }
+
+    private void alterTipsView(LinearLayoutManager manager, int[] preEnablePosition) {
+        int newPosition = manager.findFirstVisibleItemPosition() % imageList.size();
+        if (!isNull(pageView)) {
+            pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
+        }
+        if (!isNull(recyclerBannerTipLayout)) {
+            if (isVisibleDots) {
+                recyclerBannerTipLayout.changeDotsPosition(preEnablePosition[0], newPosition);
+            }
+            if (isVisibleTitle) {
+                recyclerBannerTipLayout.clearText();
+                if (!isNull(onRecyclerBannerTitleListener)) {
+                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
+                } else {
+                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
+                }
+            }
+        }
+        preEnablePosition[0] = newPosition;
     }
 
     private int getScrollToPosition() {
