@@ -20,6 +20,7 @@ import com.recycler.R;
 import com.recycler.annotation.DotsAndTitleSiteMode;
 import com.recycler.annotation.PageNumViewSiteMode;
 import com.recycler.annotation.TipsSiteMode;
+import com.recycler.exception.BannerException;
 import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.recycler.listener.OnRecyclerBannerTitleListener;
 import com.recycler.listener.RecyclerBannerImageLoaderManager;
@@ -201,6 +202,28 @@ public class RecyclerBannerLayout extends FrameLayout
         init(attrs);
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        restoreRecyclerBanner();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopRecyclerBanner();
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == GONE || visibility == INVISIBLE) {
+            stopRecyclerBanner();
+        } else if (visibility == VISIBLE) {
+            restoreRecyclerBanner();
+        }
+    }
+
 
     /************************************************************************************************************
      * <p>
@@ -208,30 +231,17 @@ public class RecyclerBannerLayout extends FrameLayout
      * <p>
      *************************************************************************************************************/
 
-    public RecyclerBannerLayout clearRecyclerBanner() {
-        clearHandler();
-        clearRecyclerBannerTipLayout();
-        clearRecyclerImageLoaderManager();
-        clearRecyclerBannerClickListener();
-        clearRecyclerBannerTitleListener();
-        clearImageList();
-        clearRecyclerPageView();
-        return this;
-    }
-
 
     public RecyclerBannerLayout initPageNumView() {
-        clearRecyclerPageView();
+        if (!isNull(pageView)) {
+            pageView = null;
+        }
         pageView = new RecyclerBannerPageView(getContext());
         pageView.setText(1 + pageNumViewMark + getDotsSize());
         addView(pageView, pageView.initPageView(this));
         return this;
     }
 
-
-    /**
-     * Initialize the dots using the default parameters
-     */
     public RecyclerBannerLayout initTips() {
         initTips(isTipsBackground, isVisibleDots, isVisibleTitle);
         return this;
@@ -249,7 +259,7 @@ public class RecyclerBannerLayout extends FrameLayout
                                          boolean isVisibleDots,
                                          boolean isVisibleTitle) {
         if (isNull(imageList)) {
-            error(R.string.banner_adapterType_null);
+            throw new BannerException(getString(R.string.banner_adapterType_null));
         }
         this.isTipsBackground = isBackgroundColor;
         this.isVisibleDots = isVisibleDots;
@@ -269,19 +279,15 @@ public class RecyclerBannerLayout extends FrameLayout
             }
         }
         addView(recyclerBannerTipLayout, recyclerBannerTipLayout.setBannerTips(this));
-//        FrameLayout.LayoutParams tipsParams = new FrameLayout.LayoutParams(tipsWidth(), tipsHeight());
-//        tipsParams.gravity = Gravity.CENTER;
-//        addView(recyclerBannerTipLayout, tipsParams);
         return this;
     }
-
 
     /**
      * Initializes a List image resource
      */
     public RecyclerBannerLayout initListResources(@NonNull List<? extends RecyclerBannerModel> imageList) {
         if (isNull(imageList)) {
-            error(R.string.list_null);
+            throw new BannerException(getString(R.string.list_null));
         }
         this.imageList = imageList;
         initAdapter();
@@ -294,7 +300,7 @@ public class RecyclerBannerLayout extends FrameLayout
      */
     public RecyclerBannerLayout initArrayResources(@NonNull Object[] imageArray) {
         if (isNull(imageArray)) {
-            error(R.string.array_null);
+            throw new BannerException(getString(R.string.array_null));
         }
         List<RecyclerBannerModel> imageArrayList = new ArrayList<>();
         for (Object url : Arrays.asList(imageArray)) {
@@ -309,12 +315,12 @@ public class RecyclerBannerLayout extends FrameLayout
      */
     public RecyclerBannerLayout initArrayResources(@NonNull Object[] imageArray, @NonNull String[] imageArrayTitle) {
         if (isNull(imageArray, imageArrayTitle)) {
-            error(R.string.array_null_);
+            throw new BannerException(getString(R.string.array_null_));
         }
         List<Object> url = Arrays.asList(imageArray);
         List<String> title = Arrays.asList(imageArrayTitle);
         if (url.size() != title.size()) {
-            error(R.string.array_size_lnconsistent);
+            throw new BannerException(getString(R.string.array_size_lnconsistent));
         }
         List<RecyclerBannerModel> imageArrayList = new ArrayList<>();
         int size = url.size();
@@ -338,11 +344,11 @@ public class RecyclerBannerLayout extends FrameLayout
      */
     public RecyclerBannerLayout start(boolean isStartRotation, long delayTime) {
         clearHandler();
+        this.delayTime = delayTime;
+        this.isStartRotation = isStartRotation;
         if (isStartRotation && getDotsSize() > 1) {
             recyclerBannerHandlerUtils = new RecyclerBannerHandlerUtils(this, getScrollToPosition());
             recyclerBannerHandlerUtils.setDelayTime(delayTime);
-            this.delayTime = delayTime;
-            this.isStartRotation = isStartRotation;
             restoreRecyclerBanner();
         }
         return this;
@@ -365,28 +371,11 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    public RecyclerBannerLayout clearRecyclerBannerClickListener() {
-        if (!isNull(onRecyclerBannerClickListener)) {
-            onRecyclerBannerClickListener = null;
-        }
-        return this;
-    }
 
     public List<? extends RecyclerBannerModel> getImageList() {
         return imageList;
     }
 
-    public RecyclerBannerLayout clearImageList() {
-        if (!isNull(imageList)) {
-            imageList.clear();
-            imageList = null;
-        }
-        return this;
-    }
-
-    public RecyclerBannerHandlerUtils getRecyclerBannerHandlerUtils() {
-        return recyclerBannerHandlerUtils;
-    }
 
     public RecyclerBannerLayout clearHandler() {
         if (!isNull(recyclerBannerHandlerUtils)) {
@@ -397,10 +386,6 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    public RecyclerBannerTipsLayout getRecyclerBannerTipLayout() {
-        return recyclerBannerTipLayout;
-    }
-
     public RecyclerBannerLayout clearRecyclerBannerTipLayout() {
         if (!isNull(recyclerBannerTipLayout)) {
             recyclerBannerTipLayout.removeAllViews();
@@ -409,44 +394,11 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    public RecyclerBannerLayout clearRecyclerImageLoaderManager() {
-        if (!isNull(recyclerImageLoaderManage)) {
-            recyclerImageLoaderManage = null;
-        }
-        return this;
-    }
-
-    public RecyclerBannerLayout clearRecyclerBannerTitleListener() {
-        if (!isNull(onRecyclerBannerTitleListener)) {
-            onRecyclerBannerTitleListener = null;
-        }
-        return this;
-    }
-
-
-    public RecyclerBannerPageView getRecyclerPageView() {
-        return pageView;
-    }
-
-    public RecyclerBannerLayout clearRecyclerPageView() {
-        if (!isNull(pageView)) {
-            pageView = null;
-        }
-        return this;
-    }
-
-    /**
-     * get banner rotation status
-     */
     public int getRecyclerBannerStatus() {
         if (isNull(recyclerBannerHandlerUtils)) {
-            error(R.string.banner_handler_erro);
+            throw new BannerException(getString(R.string.banner_handler_erro));
         }
         return recyclerBannerHandlerUtils.getBannerStatus();
-    }
-
-    public void startRecyclerBanner() {
-        start(true);
     }
 
     public void stopRecyclerBanner() {
@@ -470,6 +422,7 @@ public class RecyclerBannerLayout extends FrameLayout
     /************************************************************************************************************
      * <p>
      * <p>                          BannerTipsLayout method start
+     *                              the call takes effect before the initTips () method
      * <p>
      *************************************************************************************************************/
 
@@ -497,7 +450,7 @@ public class RecyclerBannerLayout extends FrameLayout
 
     /**
      * sets the status selector for small dots
-     * The call takes effect before the initTips () method
+     * T
      */
     public RecyclerBannerLayout initTipsDotsSelector(@DrawableRes int dotsSelector) {
         this.dotsSelector = dotsSelector;
@@ -682,9 +635,110 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
 
+    private void initAdapter() {
+        recyclerAdapter = new RecyclerBannerAdapter(imageList);
+        recyclerAdapter.setErrorImage(errorImageView);
+        recyclerAdapter.setPlaceImage(placeImageView);
+        recyclerAdapter.setClickListener(onRecyclerBannerClickListener);
+        recyclerAdapter.setImageLoaderManager(recyclerImageLoaderManage);
+
+
+        recyclerView = new RecyclerView(getContext());
+        final LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
+        if (isVertical) {
+            manager.setOrientation(LinearLayoutManager.VERTICAL);
+        } else {
+            manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        }
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(recyclerAdapter);
+        final int[] preEnablePosition = {0};
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                alterTipsView(manager, preEnablePosition);
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        if (!isNull(recyclerBannerHandlerUtils) && isStartRotation) {
+                            recyclerBannerHandlerUtils.sendMessage(Message.obtain(recyclerBannerHandlerUtils,
+                                    RecyclerBannerHandlerUtils.MSG_PAGE, manager.findLastCompletelyVisibleItemPosition(), 0));
+                        }
+                        break;
+                    default:
+                        if (!isNull(recyclerBannerHandlerUtils)) {
+                            recyclerBannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_KEEP);
+                            recyclerBannerHandlerUtils.setBannerStatus(-1);
+                        }
+                        break;
+                }
+
+            }
+        });
+
+        PagerSnapHelper helper = new PagerSnapHelper();
+        helper.attachToRecyclerView(recyclerView);
+        recyclerView.scrollToPosition(getScrollToPosition());
+        addView(recyclerView);
+        start(isStartRotation);
+    }
+
+
+    private void alterTipsView(LinearLayoutManager manager, int[] preEnablePosition) {
+        int newPosition = manager.findFirstVisibleItemPosition() % imageList.size();
+        if (!isNull(pageView)) {
+            pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
+        }
+        if (!isNull(recyclerBannerTipLayout)) {
+            if (isVisibleDots) {
+                recyclerBannerTipLayout.changeDotsPosition(preEnablePosition[0], newPosition);
+            }
+            if (isVisibleTitle) {
+                recyclerBannerTipLayout.clearText();
+                if (!isNull(onRecyclerBannerTitleListener)) {
+                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
+                } else {
+                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
+                }
+            }
+        }
+        preEnablePosition[0] = newPosition;
+    }
+
+    private int getScrollToPosition() {
+        return (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % getDotsSize());
+    }
+
+    private int getDotsSize() {
+        if (!isNull(imageList) && imageList.size() > 0) {
+            return imageList.size();
+        }
+        throw new BannerException(getString(R.string.list_null));
+    }
+
+    private String getString(int id) {
+        return getContext().getString(id);
+    }
+
+    private boolean isNull(Object... objects) {
+        for (Object object : objects) {
+            if (object == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void setCurrentItem(int i) {
+        if (!isNull(recyclerView)) {
+            recyclerView.smoothScrollToPosition(i);
+        }
+    }
+
     /************************************************************************************************************
      * <p>
-     * <p>                          dotsView default setting    start
+     * <p>                          RecyclerBannerWidget method
      * <p>
      *************************************************************************************************************/
 
@@ -731,13 +785,6 @@ public class RecyclerBannerLayout extends FrameLayout
         return dotsSite;
     }
 
-
-    /************************************************************************************************************
-     * <p>
-     * <p>                          titleView default setting    start
-     * <p>
-     *************************************************************************************************************/
-
     @Override
     public int titleColor() {
         return titleColor;
@@ -774,13 +821,6 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
 
-    /************************************************************************************************************
-     * <p>
-     * <p>                          BannerTipsView default setting    start
-     * <p>
-     *************************************************************************************************************/
-
-
     @Override
     public int tipsSite() {
         return tipsSite;
@@ -806,12 +846,6 @@ public class RecyclerBannerLayout extends FrameLayout
         return isTipsBackground;
     }
 
-
-    /************************************************************************************************************
-     * <p>
-     * <p>                          BannerPageNumView default setting    start
-     * <p>
-     *************************************************************************************************************/
 
     @Override
     public int getPageNumViewTopMargin() {
@@ -877,117 +911,6 @@ public class RecyclerBannerLayout extends FrameLayout
     @Override
     public int getPageNumViewBackgroundColor() {
         return pageNumViewBackgroundColor;
-    }
-
-
-    private void initAdapter() {
-        recyclerAdapter = new RecyclerBannerAdapter(imageList);
-        recyclerAdapter.setErrorImage(errorImageView);
-        recyclerAdapter.setPlaceImage(placeImageView);
-        recyclerAdapter.setClickListener(onRecyclerBannerClickListener);
-        recyclerAdapter.setImageLoaderManager(recyclerImageLoaderManage);
-
-
-        recyclerView = new RecyclerView(getContext());
-        final LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
-        if (isVertical) {
-            manager.setOrientation(LinearLayoutManager.VERTICAL);
-        } else {
-            manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        }
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(recyclerAdapter);
-        final int[] preEnablePosition = {0};
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                alterTipsView(manager, preEnablePosition);
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                        if (!isNull(recyclerBannerHandlerUtils) && isStartRotation) {
-                            recyclerBannerHandlerUtils.sendMessage(Message.obtain(recyclerBannerHandlerUtils,
-                                    RecyclerBannerHandlerUtils.MSG_PAGE, manager.findLastCompletelyVisibleItemPosition(), 0));
-                        }
-                        break;
-                    default:
-                        if (!isNull(recyclerBannerHandlerUtils)) {
-                            recyclerBannerHandlerUtils.sendEmptyMessage(RecyclerBannerHandlerUtils.MSG_KEEP);
-                            recyclerBannerHandlerUtils.setBannerStatus(-1);
-                        }
-                        break;
-                }
-
-            }
-        });
-
-        PagerSnapHelper helper = new PagerSnapHelper();
-        helper.attachToRecyclerView(recyclerView);
-        recyclerView.scrollToPosition(getScrollToPosition());
-        addView(recyclerView);
-        start(isStartRotation);
-    }
-
-    private void alterTipsView(LinearLayoutManager manager, int[] preEnablePosition) {
-        int newPosition = manager.findFirstVisibleItemPosition() % imageList.size();
-        if (!isNull(pageView)) {
-            pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
-        }
-        if (!isNull(recyclerBannerTipLayout)) {
-            if (isVisibleDots) {
-                recyclerBannerTipLayout.changeDotsPosition(preEnablePosition[0], newPosition);
-            }
-            if (isVisibleTitle) {
-                recyclerBannerTipLayout.clearText();
-                if (!isNull(onRecyclerBannerTitleListener)) {
-                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
-                } else {
-                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
-                }
-            }
-        }
-        preEnablePosition[0] = newPosition;
-    }
-
-    private int getScrollToPosition() {
-        return (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % getDotsSize());
-    }
-
-    private int getDotsSize() {
-        if (!isNull(imageList) && imageList.size() > 0) {
-            return imageList.size();
-        }
-        throw error(R.string.list_null);
-    }
-
-    private String getString(int id) {
-        return getContext().getString(id);
-    }
-
-    private BannerException error(int messageId) {
-        throw new BannerException(getString(messageId));
-    }
-
-    private boolean isNull(Object... objects) {
-        for (Object object : objects) {
-            if (object == null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void setCurrentItem(int i) {
-        if (!isNull(recyclerView)) {
-            recyclerView.smoothScrollToPosition(i);
-        }
-    }
-
-    private static class BannerException extends RuntimeException {
-        private BannerException(String s) {
-            super(s);
-        }
     }
 
 }
