@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="banner_image" type="id" />
 
     <declare-styleable name="RecyclerBannerLayout">
         <attr name="rvb_delay_time" format="integer" />
@@ -54,6 +55,12 @@
         <attr name="rvb_page_num_view_BackgroundColor" format="color" />
         <attr name="rvb_page_num_view_textSize" format="dimension" />
         <attr name="rvb_page_num_view_mark" format="string" />
+
+        <attr name="rvb_card_marginLeft" format="integer" />
+        <attr name="rvb_card_marginTop" format="integer" />
+        <attr name="rvb_card_marginRight" format="integer" />
+        <attr name="rvb_card_marginBottom" format="integer" />
+        <attr name="rvb_card_Radius" format="float" />
 
         <attr name="rvb_pageNumView_site">
             <enum name="topLeft" value="0" />

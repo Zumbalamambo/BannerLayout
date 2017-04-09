@@ -132,4 +132,13 @@ class RecyclerBannerDefaults {
     static final int PAGE_NUL_VIEW_TEXT_COLOR = R.color.colorWhite;
     static final String PAGE_NUM_VIEW_MARK = " / ";
 
+    /**
+     * cardView default
+     */
+    static final float CARD_RADIUS = 0;
+    static final int CARD_RIGHT_MARGIN = 0;
+    static final int CARD_TOP_MARGIN = 0;
+    static final int CARD_LEFT_MARGIN = 0;
+    static final int CARD_BOTTOM_MARGIN = 0;
+
 }

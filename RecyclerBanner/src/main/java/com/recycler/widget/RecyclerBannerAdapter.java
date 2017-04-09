@@ -1,12 +1,14 @@
 package com.recycler.widget;
 
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.recycler.R;
 import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.recycler.listener.RecyclerBannerImageLoaderManager;
 import com.recycler.model.RecyclerBannerModel;
@@ -22,8 +24,13 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<? extends RecyclerBannerModel> mDatas = null;
     private RecyclerBannerImageLoaderManager imageLoaderManager = null;
     private OnRecyclerBannerClickListener clickListener = null;
+    private CardViewInterface cardViewInterface = null;
     private int error_image;
     private int place_image;
+
+    void setCardViewInterface(CardViewInterface cardViewInterface) {
+        this.cardViewInterface = cardViewInterface;
+    }
 
     void setImageLoaderManager(RecyclerBannerImageLoaderManager imageLoaderManager) {
         this.imageLoaderManager = imageLoaderManager;
@@ -47,9 +54,22 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        CardView.LayoutParams layoutParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.MATCH_PARENT);
+        CardView cardView = new CardView(parent.getContext());
+
         AppCompatImageView imageView = new AppCompatImageView(parent.getContext());
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        return new RecyclerView.ViewHolder(imageView) {
+        imageView.setId(R.id.banner_image);
+        if (cardViewInterface != null) {
+            layoutParams.setMargins(
+                    cardViewInterface.getCardLeftMargin(),
+                    cardViewInterface.getCardTopMargin(),
+                    cardViewInterface.getCardRightMargin(),
+                    cardViewInterface.getCardBottomMargin());
+            cardView.setRadius(cardViewInterface.getCardRadius());
+        }
+        cardView.setLayoutParams(layoutParams);
+        cardView.addView(imageView);
+        return new RecyclerView.ViewHolder(cardView) {
         };
     }
 
@@ -60,7 +80,6 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         final int pos = position % mDatas.size();
-
         if (imageLoaderManager == null) {
             Glide
                     .with(holder.itemView.getContext())
@@ -68,10 +87,10 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .placeholder(place_image)
                     .error(error_image)
                     .centerCrop()
-                    .into((ImageView) holder.itemView);
+                    .into((ImageView) holder.itemView.findViewById(R.id.banner_image));
         } else {
             //noinspection unchecked
-            imageLoaderManager.display((ImageView) holder.itemView, mDatas.get(pos));
+            imageLoaderManager.display((ImageView) holder.itemView.findViewById(R.id.banner_image), mDatas.get(pos));
         }
 
         if (clickListener != null) {
@@ -88,5 +107,18 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : Integer.MAX_VALUE;
+    }
+
+    public interface CardViewInterface {
+
+        float getCardRadius();
+
+        int getCardBottomMargin();
+
+        int getCardRightMargin();
+
+        int getCardLeftMargin();
+
+        int getCardTopMargin();
     }
 }

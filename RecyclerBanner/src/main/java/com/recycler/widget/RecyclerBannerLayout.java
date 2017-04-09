@@ -48,7 +48,8 @@ public class RecyclerBannerLayout extends FrameLayout
         RecyclerBannerTipsLayout.TitleInterface,
         RecyclerBannerTipsLayout.TipsInterface,
         RecyclerBannerPageView.PageNumViewInterface,
-        RecyclerSelectItem {
+        RecyclerSelectItem,
+        RecyclerBannerAdapter.CardViewInterface {
 
     public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -131,6 +132,11 @@ public class RecyclerBannerLayout extends FrameLayout
     private float pageNumViewTextSize;
     private String pageNumViewMark;
 
+    private int cardTopMargin;
+    private int cardRightMargin;
+    private int cardBottomMargin;
+    private int cardLeftMargin;
+    private float cardRadius;
 
     private void init(AttributeSet attrs) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.RecyclerBannerLayout);
@@ -187,6 +193,14 @@ public class RecyclerBannerLayout extends FrameLayout
         if (isNull(pageNumViewMark)) {
             pageNumViewMark = RecyclerBannerDefaults.PAGE_NUM_VIEW_MARK;
         }
+
+
+        cardLeftMargin = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_card_marginLeft, RecyclerBannerDefaults.CARD_LEFT_MARGIN);
+        cardRightMargin = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_card_marginRight, RecyclerBannerDefaults.CARD_RIGHT_MARGIN);
+        cardTopMargin = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_card_marginTop, RecyclerBannerDefaults.CARD_TOP_MARGIN);
+        cardBottomMargin = typedArray.getInteger(R.styleable.RecyclerBannerLayout_rvb_card_marginBottom, RecyclerBannerDefaults.CARD_BOTTOM_MARGIN);
+        cardRadius = typedArray.getFloat(R.styleable.RecyclerBannerLayout_rvb_card_Radius, RecyclerBannerDefaults.CARD_RADIUS);
+
         typedArray.recycle();
     }
 
@@ -638,6 +652,30 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
+    public RecyclerView getRecyclerView() {
+        if (isNull(recyclerView)) {
+            throw new NullPointerException("RecyclerView Null!!!");
+        }
+        return recyclerView;
+    }
+
+    public RecyclerBannerLayout setCardMargin(
+            int cardTopMargin,
+            int cardRightMargin,
+            int cardBottomMargin,
+            int cardLeftMargin) {
+        this.cardTopMargin = cardTopMargin;
+        this.cardRightMargin = cardRightMargin;
+        this.cardBottomMargin = cardBottomMargin;
+        this.cardLeftMargin = cardLeftMargin;
+        return this;
+    }
+
+
+    public RecyclerBannerLayout setCardRadius(float cardRadius) {
+        this.cardRadius = cardRadius;
+        return this;
+    }
 
     private void initAdapter() {
 
@@ -655,7 +693,7 @@ public class RecyclerBannerLayout extends FrameLayout
         recyclerAdapter.setPlaceImage(placeImageView);
         recyclerAdapter.setClickListener(onRecyclerBannerClickListener);
         recyclerAdapter.setImageLoaderManager(recyclerImageLoaderManage);
-
+        recyclerAdapter.setCardViewInterface(this);
 
         recyclerView = new RecyclerView(getContext());
 
@@ -665,7 +703,6 @@ public class RecyclerBannerLayout extends FrameLayout
         } else {
             manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         }
-
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(recyclerAdapter);
         final int[] preEnablePosition = {0};
@@ -751,7 +788,6 @@ public class RecyclerBannerLayout extends FrameLayout
             recyclerView.smoothScrollToPosition(i);
         }
     }
-
 
     @Override
     public int dotsCount() {
@@ -923,4 +959,28 @@ public class RecyclerBannerLayout extends FrameLayout
         return pageNumViewBackgroundColor;
     }
 
+    @Override
+    public float getCardRadius() {
+        return cardRadius;
+    }
+
+    @Override
+    public int getCardBottomMargin() {
+        return cardBottomMargin;
+    }
+
+    @Override
+    public int getCardRightMargin() {
+        return cardRightMargin;
+    }
+
+    @Override
+    public int getCardLeftMargin() {
+        return cardLeftMargin;
+    }
+
+    @Override
+    public int getCardTopMargin() {
+        return cardTopMargin;
+    }
 }
