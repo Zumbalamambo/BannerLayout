@@ -29,20 +29,27 @@ public class MainActivity extends AppCompatActivity {
 //        recyclerBannerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500));
         recyclerBannerLayout
                 .setTipsSite(RecyclerBannerLayout.TOP)
+//                .isVertical(true)
                 .initListResources(initSystemNetWorkModel())
+//                .setTitleSetting(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent), 22)
+//                .setTipsBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
+//                .initTipsDotsSelector(R.drawable.banner)
+//                .setTipsWidthAndHeight(RecyclerBannerLayout.MATCH_PARENT, 100)
+//                .setTitleMargin(40, 20)
+//                .setDotsWidthAndHeight(30, 30)
+//                .setDotsMargin(30, 30)
+//                .setPageNumViewRadius(5)
+//                .setPageNumViewTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
+//                .setPageNumViewBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
+//                .setPageNumViewTextSize(22)
+//                .setPageNumViewMark(" & ")
                 .initTips(true, true, true)
                 .setPageNumViewSite(RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_CENTER)
                 .initPageNumView()
-                .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener() {
+                .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener<RecyclerBannerModel>() {
                     @Override
-                    public void onBannerClick(View view, int position, Object model) {
-                        if (recyclerBannerLayout.getRecyclerBannerStatus() == -1) {
-                            Toast.makeText(view.getContext(), "开始轮播", Toast.LENGTH_SHORT).show();
-                            recyclerBannerLayout.restoreRecyclerBanner();
-                        } else {
-                            recyclerBannerLayout.stopRecyclerBanner();
-                            Toast.makeText(view.getContext(), "暂停轮播", Toast.LENGTH_SHORT).show();
-                        }
+                    public void onBannerClick(View view, int position, RecyclerBannerModel model) {
+                        Toast.makeText(view.getContext(), "banner click", Toast.LENGTH_SHORT).show();
                     }
                 }).start(true);
     }

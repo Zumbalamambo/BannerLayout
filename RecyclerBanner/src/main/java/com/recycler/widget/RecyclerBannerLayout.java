@@ -264,7 +264,10 @@ public class RecyclerBannerLayout extends FrameLayout
         this.isTipsBackground = isBackgroundColor;
         this.isVisibleDots = isVisibleDots;
         this.isVisibleTitle = isVisibleTitle;
-        clearRecyclerBannerTipLayout();
+        if (!isNull(recyclerBannerTipLayout)) {
+            recyclerBannerTipLayout.removeAllViews();
+            recyclerBannerTipLayout = null;
+        }
         recyclerBannerTipLayout = new RecyclerBannerTipsLayout(getContext());
         recyclerBannerTipLayout.removeAllViews();
         if (isVisibleDots) {
@@ -382,14 +385,6 @@ public class RecyclerBannerLayout extends FrameLayout
             recyclerBannerHandlerUtils.setBannerStatus(-1);
             recyclerBannerHandlerUtils.removeCallbacksAndMessages(null);
             recyclerBannerHandlerUtils = null;
-        }
-        return this;
-    }
-
-    public RecyclerBannerLayout clearRecyclerBannerTipLayout() {
-        if (!isNull(recyclerBannerTipLayout)) {
-            recyclerBannerTipLayout.removeAllViews();
-            recyclerBannerTipLayout = null;
         }
         return this;
     }
@@ -634,6 +629,10 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
+    public RecyclerBannerLayout isVertical(boolean isVertical) {
+        this.isVertical = isVertical;
+        return this;
+    }
 
     private void initAdapter() {
         recyclerAdapter = new RecyclerBannerAdapter(imageList);
@@ -735,12 +734,6 @@ public class RecyclerBannerLayout extends FrameLayout
             recyclerView.smoothScrollToPosition(i);
         }
     }
-
-    /************************************************************************************************************
-     * <p>
-     * <p>                          RecyclerBannerWidget method
-     * <p>
-     *************************************************************************************************************/
 
 
     @Override
