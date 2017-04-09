@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.support.v7.widget.RecyclerView.OnScrollListener;
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
+
 
 /**
  * by y on 2016/10/24
@@ -44,7 +47,8 @@ public class RecyclerBannerLayout extends FrameLayout
         DotsInterface,
         RecyclerBannerTipsLayout.TitleInterface,
         RecyclerBannerTipsLayout.TipsInterface,
-        RecyclerBannerPageView.PageNumViewInterface, RecyclerSelectItem {
+        RecyclerBannerPageView.PageNumViewInterface,
+        RecyclerSelectItem {
 
     public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -634,7 +638,18 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
+
     private void initAdapter() {
+
+        if (!isNull(recyclerAdapter)) {
+            recyclerAdapter = null;
+        }
+        if (!isNull(recyclerView)) {
+            removeView(recyclerView);
+            recyclerView = null;
+        }
+
+
         recyclerAdapter = new RecyclerBannerAdapter(imageList);
         recyclerAdapter.setErrorImage(errorImageView);
         recyclerAdapter.setPlaceImage(placeImageView);
@@ -643,22 +658,24 @@ public class RecyclerBannerLayout extends FrameLayout
 
 
         recyclerView = new RecyclerView(getContext());
+
         final LinearLayoutManager manager = new LinearLayoutManager(recyclerView.getContext());
         if (isVertical) {
             manager.setOrientation(LinearLayoutManager.VERTICAL);
         } else {
             manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         }
+
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(recyclerAdapter);
         final int[] preEnablePosition = {0};
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                alterTipsView(manager, preEnablePosition);
+                alterTipsView(manager.findFirstVisibleItemPosition(), preEnablePosition);
                 switch (newState) {
-                    case RecyclerView.SCROLL_STATE_IDLE:
+                    case SCROLL_STATE_IDLE:
                         if (!isNull(recyclerBannerHandlerUtils) && isStartRotation) {
                             recyclerBannerHandlerUtils.sendMessage(Message.obtain(recyclerBannerHandlerUtils,
                                     RecyclerBannerHandlerUtils.MSG_PAGE, manager.findLastCompletelyVisibleItemPosition(), 0));
@@ -683,8 +700,8 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
 
-    private void alterTipsView(LinearLayoutManager manager, int[] preEnablePosition) {
-        int newPosition = manager.findFirstVisibleItemPosition() % imageList.size();
+    private void alterTipsView(int manager, int[] preEnablePosition) {
+        int newPosition = manager % getDotsSize();
         if (!isNull(pageView)) {
             pageView.setText(newPosition + 1 + pageNumViewMark + getDotsSize());
         }
