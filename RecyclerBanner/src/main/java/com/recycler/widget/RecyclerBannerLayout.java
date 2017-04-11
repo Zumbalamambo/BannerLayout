@@ -22,16 +22,13 @@ import com.recycler.annotation.PageNumViewSiteMode;
 import com.recycler.annotation.TipsSiteMode;
 import com.recycler.exception.BannerException;
 import com.recycler.listener.OnRecyclerBannerClickListener;
-import com.recycler.listener.OnRecyclerBannerTitleListener;
 import com.recycler.listener.RecyclerBannerImageLoaderManager;
+import com.recycler.listener.RecyclerBannerModelCallBack;
 import com.recycler.listener.RecyclerSelectItem;
-import com.recycler.model.RecyclerBannerModel;
 import com.recycler.util.RecyclerBannerHandlerUtils;
 import com.recycler.util.RecyclerBannerSelectorUtils;
 import com.recycler.widget.RecyclerBannerTipsLayout.DotsInterface;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static android.support.v7.widget.RecyclerView.OnScrollListener;
@@ -75,11 +72,10 @@ public class RecyclerBannerLayout extends FrameLayout
     public static final int CENTER = 13;
 
     private OnRecyclerBannerClickListener onRecyclerBannerClickListener = null;
-    private List<? extends RecyclerBannerModel> imageList = null;
+    private List<? extends RecyclerBannerModelCallBack> imageList = null;
     private RecyclerBannerHandlerUtils recyclerBannerHandlerUtils = null;
     private RecyclerBannerTipsLayout recyclerBannerTipLayout = null;
     private RecyclerBannerImageLoaderManager recyclerImageLoaderManage = null; //Image Load Manager
-    private OnRecyclerBannerTitleListener onRecyclerBannerTitleListener = null;
     private RecyclerBannerPageView pageView = null; // viewpager page count textView
     private RecyclerBannerAdapter recyclerAdapter = null;
     private RecyclerView recyclerView = null;
@@ -293,11 +289,7 @@ public class RecyclerBannerLayout extends FrameLayout
         }
         if (isVisibleTitle) {
             recyclerBannerTipLayout.setTitle(this);
-            if (!isNull(onRecyclerBannerTitleListener)) {
-                recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(0));
-            } else {
-                recyclerBannerTipLayout.setTitle(imageList.get(0).getTitle());
-            }
+            recyclerBannerTipLayout.setTitle(imageList.get(0).getRecyclerBannerTitle());
         }
         addView(recyclerBannerTipLayout, recyclerBannerTipLayout.setBannerTips(this));
         return this;
@@ -306,49 +298,12 @@ public class RecyclerBannerLayout extends FrameLayout
     /**
      * Initializes a List image resource
      */
-    public RecyclerBannerLayout initListResources(@NonNull List<? extends RecyclerBannerModel> imageList) {
+    public RecyclerBannerLayout initListResources(@NonNull List<? extends RecyclerBannerModelCallBack> imageList) {
         if (isNull(imageList)) {
             throw new BannerException(getString(R.string.list_null));
         }
         this.imageList = imageList;
         initAdapter();
-        return this;
-    }
-
-
-    /**
-     * Initializes an Array image resource
-     */
-    public RecyclerBannerLayout initArrayResources(@NonNull Object[] imageArray) {
-        if (isNull(imageArray)) {
-            throw new BannerException(getString(R.string.array_null));
-        }
-        List<RecyclerBannerModel> imageArrayList = new ArrayList<>();
-        for (Object url : Arrays.asList(imageArray)) {
-            imageArrayList.add(new RecyclerBannerModel(url));
-        }
-        initListResources(imageArrayList);
-        return this;
-    }
-
-    /**
-     * Initializes an Array image resource
-     */
-    public RecyclerBannerLayout initArrayResources(@NonNull Object[] imageArray, @NonNull String[] imageArrayTitle) {
-        if (isNull(imageArray, imageArrayTitle)) {
-            throw new BannerException(getString(R.string.array_null_));
-        }
-        List<Object> url = Arrays.asList(imageArray);
-        List<String> title = Arrays.asList(imageArrayTitle);
-        if (url.size() != title.size()) {
-            throw new BannerException(getString(R.string.array_size_lnconsistent));
-        }
-        List<RecyclerBannerModel> imageArrayList = new ArrayList<>();
-        int size = url.size();
-        for (int i = 0; i < size; i++) {
-            imageArrayList.add(new RecyclerBannerModel(url.get(i), title.get(i)));
-        }
-        initListResources(imageArrayList);
         return this;
     }
 
@@ -393,7 +348,7 @@ public class RecyclerBannerLayout extends FrameLayout
     }
 
 
-    public List<? extends RecyclerBannerModel> getImageList() {
+    public List<? extends RecyclerBannerModelCallBack> getImageList() {
         return imageList;
     }
 
@@ -634,11 +589,6 @@ public class RecyclerBannerLayout extends FrameLayout
         return this;
     }
 
-    public RecyclerBannerLayout addOnRecyclerBannerTitleListener(@NonNull OnRecyclerBannerTitleListener onBannerTitleListener) {
-        this.onRecyclerBannerTitleListener = onBannerTitleListener;
-        return this;
-    }
-
     public RecyclerBannerLayout setRecyclerImageLoaderManager(@NonNull RecyclerBannerImageLoaderManager loaderManage) {
         this.recyclerImageLoaderManage = loaderManage;
         if (!isNull(recyclerAdapter)) {
@@ -748,11 +698,7 @@ public class RecyclerBannerLayout extends FrameLayout
             }
             if (isVisibleTitle) {
                 recyclerBannerTipLayout.clearText();
-                if (!isNull(onRecyclerBannerTitleListener)) {
-                    recyclerBannerTipLayout.setTitle(onRecyclerBannerTitleListener.getTitle(newPosition));
-                } else {
-                    recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getTitle());
-                }
+                recyclerBannerTipLayout.setTitle(imageList.get(newPosition).getRecyclerBannerTitle());
             }
         }
         preEnablePosition[0] = newPosition;

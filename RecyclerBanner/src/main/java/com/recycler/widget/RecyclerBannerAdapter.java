@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide;
 import com.recycler.R;
 import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.recycler.listener.RecyclerBannerImageLoaderManager;
-import com.recycler.model.RecyclerBannerModel;
+import com.recycler.listener.RecyclerBannerModelCallBack;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
 
 class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<? extends RecyclerBannerModel> mDatas = null;
+    private List<? extends RecyclerBannerModelCallBack> mDatas = null;
     private RecyclerBannerImageLoaderManager imageLoaderManager = null;
     private OnRecyclerBannerClickListener clickListener = null;
     private CardViewInterface cardViewInterface = null;
@@ -48,7 +48,7 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.place_image = place_image;
     }
 
-    RecyclerBannerAdapter(List<? extends RecyclerBannerModel> imageList) {
+    RecyclerBannerAdapter(List<? extends RecyclerBannerModelCallBack> imageList) {
         this.mDatas = imageList;
     }
 
@@ -83,7 +83,7 @@ class RecyclerBannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (imageLoaderManager == null) {
             Glide
                     .with(holder.itemView.getContext())
-                    .load(mDatas.get(pos).getImage())
+                    .load(mDatas.get(pos).getRecyclerBannerImageUrl())
                     .placeholder(place_image)
                     .error(error_image)
                     .centerCrop()

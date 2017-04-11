@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.recycler.model.RecyclerBannerModel;
-import com.bannersimple.bean.BannerBean;
-import com.bannersimple.bean.ImageModel;
+import com.bannersimple.model.SimpleRecyclerBannerModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +18,10 @@ import java.util.List;
  */
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder> {
-    private static final int IMAGE_MODEL = 0;//Customize the model class
-    private static final int SYSTEM_NETWORK_MODEL = 1;//Comes with the Model class, the use of network data
-    private static final int IMAGE_LOADER_MANAGER = 2;//A collection of system animations
-    private static final int IS_VERTICAL = 3; //Customize Load Picture Manager
+    private static final int IMAGE_MODEL = 0;
+    private static final int SYSTEM_NETWORK_MODEL = 1;
+    private static final int IMAGE_LOADER_MANAGER = 2;
+    private static final int IS_VERTICAL = 3;
 
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, int position) {
@@ -39,7 +37,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
                 break;
             case IS_VERTICAL:
 
-                //if it is a vertical slide can not set the animation
                 holder.getTitle().setText(getString(holder.getContext(), R.string.is_vertical));
                 break;
             default:
@@ -107,33 +104,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.BaseViewHolder
     /**
      * Comes with the Model class, the use of network data
      */
-    private List<RecyclerBannerModel> initSystemNetWorkModel() {
-        List<RecyclerBannerModel> mDatas = new ArrayList<>();
-        mDatas.add(new RecyclerBannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
-        mDatas.add(new RecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "Shame it ~"));
-        mDatas.add(new RecyclerBannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
-        mDatas.add(new RecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
-        return mDatas;
-    }
-
-    /**
-     * Customize the model class
-     */
-    private List<ImageModel> initImageModel() {
-        List<ImageModel> list = new ArrayList<>();
-        list.add(new ImageModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "那个时候刚恋爱，这个时候放分手", "banner1"));
-        list.add(new ImageModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "羞羞呢～", "banner2"));
-        list.add(new ImageModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "腿不长 但细", "banner3"));
-        list.add(new ImageModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "深夜了", "banner4"));
-        return list;
-    }
-
-    private List<BannerBean> initBannerBean() {
-        List<BannerBean> mDatas = new ArrayList<>();
-        mDatas.add(new BannerBean("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
-        mDatas.add(new BannerBean("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "Shame it ~"));
-        mDatas.add(new BannerBean("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
-        mDatas.add(new BannerBean("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
+    private List<SimpleRecyclerBannerModel> initModel() {
+        List<SimpleRecyclerBannerModel> mDatas = new ArrayList<>();
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6qyhzgj30dw07t75g.jpg", "Shame it ~"));
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
         return mDatas;
     }
 

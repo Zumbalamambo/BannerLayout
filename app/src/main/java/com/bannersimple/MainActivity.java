@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.recycler.listener.OnRecyclerBannerClickListener;
-import com.recycler.model.RecyclerBannerModel;
+import com.bannersimple.model.SimpleRecyclerBannerModel;
 import com.recycler.widget.RecyclerBannerLayout;
 
 import java.util.ArrayList;
@@ -48,20 +48,20 @@ public class MainActivity extends AppCompatActivity {
 //                .initTips(true, true, true)
                 .setPageNumViewSite(RecyclerBannerLayout.PAGE_NUM_VIEW_SITE_BOTTOM_RIGHT)
                 .initPageNumView()
-                .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener<RecyclerBannerModel>() {
+                .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener<SimpleRecyclerBannerModel>() {
                     @Override
-                    public void onBannerClick(View view, int position, RecyclerBannerModel model) {
+                    public void onBannerClick(View view, int position, SimpleRecyclerBannerModel model) {
                         Toast.makeText(view.getContext(), "banner click", Toast.LENGTH_SHORT).show();
                     }
                 }).start(true, 4000);
     }
 
-    private List<RecyclerBannerModel> initSystemNetWorkModel() {
-        List<RecyclerBannerModel> mDatas = new ArrayList<>();
-        mDatas.add(new RecyclerBannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
-        mDatas.add(new RecyclerBannerModel("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1491588490192&di=c7c9dfd2fc4b1eeb5a4a874ec9a30d1d&imgtype=0&src=http%3A%2F%2Fmvimg2.meitudata.com%2F55713dd0165c89055.jpg", "Shame it ~"));
-        mDatas.add(new RecyclerBannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
-        mDatas.add(new RecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
+    private List<SimpleRecyclerBannerModel> initSystemNetWorkModel() {
+        List<SimpleRecyclerBannerModel> mDatas = new ArrayList<>();
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww2.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6kxwh0j30dw099ta3.jpg", "At that time just love, this time to break up"));
+        mDatas.add(new SimpleRecyclerBannerModel("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1491588490192&di=c7c9dfd2fc4b1eeb5a4a874ec9a30d1d&imgtype=0&src=http%3A%2F%2Fmvimg2.meitudata.com%2F55713dd0165c89055.jpg", "Shame it ~"));
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww1.sinaimg.cn/bmiddle/0060lm7Tgw1f94c6f7f26j30dw0ii76k.jpg", "The legs are not long but thin"));
+        mDatas.add(new SimpleRecyclerBannerModel("http://ww4.sinaimg.cn/bmiddle/0060lm7Tgw1f94c63dfjxj30dw0hjjtn.jpg", "Late at night"));
         return mDatas;
     }
 
