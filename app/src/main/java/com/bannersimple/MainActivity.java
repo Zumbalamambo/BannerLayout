@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.bannersimple.model.SimpleRecyclerBannerModel;
+import com.recycler.listener.OnRecyclerBannerClickListener;
 import com.recycler.widget.RecyclerBannerLayout;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onBannerClick(View view, int position, SimpleRecyclerBannerModel model) {
                         Toast.makeText(view.getContext(), "banner click", Toast.LENGTH_SHORT).show();
                     }
-                }).start(true, 4000);
+                }).start(true, 1500);
     }
 
     private List<SimpleRecyclerBannerModel> initSystemNetWorkModel() {

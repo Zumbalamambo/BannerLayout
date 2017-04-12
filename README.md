@@ -3,8 +3,61 @@
 Use RecyclerView to create Banner
 
 
+RecyclerBanner For reference only;
 
 
+master Based on `RelativeLayout`
+
+This branch Based on `FrameLayout`
+
+
+> Simple to use
+
+
+Bean class please implement `BannerModelCallBack`
+
+Specific reference `SimpleBannerModel`
+
+    RecyclerBannerLayout
+            .initListResources(initImageModel())//initData
+            .initTips(true, true, true)//settings tips
+            .start(true, 2000)
+
+If you use the built-in frame, please rely on Glide
+
+Because in the frame
+
+	provided 'com.github.bumptech.glide:glide:3.7.0'
+
+
+> Click the event
+
+
+        recyclerBannerLayout
+                .setOnRecyclerBannerClickListener(new OnRecyclerBannerClickListener<SimpleRecyclerBannerModel>() {
+                    @Override
+                    public void onBannerClick(View view, int position, SimpleRecyclerBannerModel model) {
+                        Toast.makeText(view.getContext(), "banner click", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+> Use the Custom Load Picture frame
+
+	public class ImageManager implements RecyclerBannerImageLoaderManager<SimpleRecyclerBannerModel> {
+	
+	    @Override
+	    public void display(ImageView imageView, SimpleRecyclerBannerModel model) {
+	        Picasso.with(imageView.getContext())
+	                .load((String) model.getRecyclerBannerImageUrl())
+	                .placeholder(R.mipmap.ic_launcher)
+	                .error(R.mipmap.ic_launcher)
+	                .into(imageView);
+	    }
+	}
+
+	recyclerBannerLayout
+	                .setRecyclerImageLoaderManager(new ImageManager())
 
 License
 --
