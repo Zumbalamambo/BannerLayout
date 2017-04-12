@@ -11,6 +11,13 @@ master Based on `RelativeLayout`
 This branch Based on `FrameLayout`
 
 
+> Screenshots
+
+[gif](https://github.com/7449/BannerLayout/blob/RecyclerBanner/app/RecyclerBanner.gif)
+
+
+![](https://github.com/7449/BannerLayout/blob/RecyclerBanner/app/RecyclerBanner.gif)
+
 > Simple to use
 
 
